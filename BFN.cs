@@ -160,6 +160,11 @@ public struct BFN
 		{	33		,	"Decillion"		} ,
 	};
 
+	public static BFN Thousand => new BFN( 1 , 3 );
+	public static BFN Million => new BFN( 1 , 6 );
+	public static BFN Billion => new BFN( 1 , 9 );
+	public static BFN Trillion => new BFN( 1 , 12 );
+
 
 	#endregion
 	#region property drawer
