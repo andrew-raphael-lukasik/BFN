@@ -54,16 +54,8 @@ public struct BFN
 		ToCommonExponent( ref a , ref b );
 		return new BFN{ number = a.number - b.number , exponent = a.exponent }.compressed;
 	}
-	public static BFN operator * ( BFN a , BFN b )
-	{
-		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number * b.number , exponent = a.exponent }.compressed;
-	}
-	public static BFN operator / ( BFN a , BFN b )
-	{
-		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number / b.number , exponent = a.exponent }.compressed;
-	}
+	public static BFN operator * ( BFN a , BFN b ) => new BFN{ number = a.number * b.number , exponent = a.exponent * b.exponent }.compressed;
+	public static BFN operator / ( BFN a , BFN b ) => new BFN{ number = a.number / b.number , exponent = a.exponent - b.exponent }.compressed;
 
 
 	#endregion
