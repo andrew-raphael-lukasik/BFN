@@ -1,8 +1,9 @@
+# Big F_____ Number
+Structure to help you store, represent and operate on very big numbers in Unity.
+
 ```diff
 ! This repo is a work in progress, expect bugs etc.
 ```
-# Big F_____ Number
-Structure to help you store, represent and operate on very big numbers in Unity.
 
 ---
 ### Define "big numbers"
