@@ -11,6 +11,8 @@ Structure to help you store, represent and operate on very big numbers in Unity.
 BFN.MaxValue = double.MaxValue * Math.Pow( 10d , int.MaxValue );
 BFN.MinValue = double.MinValue * Math.Pow( 10d , int.MinValue );
 ```
+TL;DR: These numbers are large enough to make most software (single & double precision ones) refuse to calculate them and just print "Infinity".
+
 ---
 ### Can I see it in the `Inspector` window serialized there?
 Yes:
