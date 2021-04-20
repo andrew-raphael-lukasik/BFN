@@ -1,0 +1,191 @@
+// src* = https://github.com/andrew-raphael-lukasik/BFN
+using System;
+using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+
+using UnityEngine;
+using UnityEngine.Assertions;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+[Serializable]
+public struct BFN
+{
+	#region fields
+
+
+	public double number;
+	public int exponent;
+
+
+	#endregion
+	#region properties
+
+
+	public BFN simplified { get{ var copy = this; copy.Simplify(); return copy; } }
+
+
+	#endregion
+	#region operators
+
+
+	public static bool operator == ( BFN a , BFN b ) => a.exponent==b.exponent && _Equals(a.number,b.number,1e-1000d);
+	public static bool operator != ( BFN a , BFN b ) => !(a==b);
+
+	public static BFN operator + ( BFN a , BFN b )
+	{
+		ToCommonExponent( ref a , ref b );
+		return new BFN{ number = a.number + b.number , exponent = a.exponent };
+	}
+	public static BFN operator - ( BFN a , BFN b )
+	{
+		ToCommonExponent( ref a , ref b );
+		return new BFN{ number = a.number - b.number , exponent = a.exponent };
+	}
+	public static BFN operator * ( BFN a , BFN b )
+	{
+		ToCommonExponent( ref a , ref b );
+		return new BFN{ number = a.number * b.number , exponent = a.exponent };
+	}
+	public static BFN operator / ( BFN a , BFN b )
+	{
+		ToCommonExponent( ref a , ref b );
+		return new BFN{ number = a.number / b.number , exponent = a.exponent };
+	}
+
+
+	#endregion
+	#region method overrides
+
+
+	public override string ToString () => $"{number} {GetExponentName()}";
+	
+	public override bool Equals ( object obj ) => obj!=null ? this==(BFN) obj : false;
+
+	/// <summary> I think this exponent.GetHashCode() will fully ignore numerical proximity, which is not fine is some cases, but fine for others. </summary>
+	/// <remarks> Modify this method to fit your specific use case. </remarks>
+	public override int GetHashCode ()
+	{
+		unchecked
+		{
+			int hash = 486187739;
+			hash = hash * 16777619 + number.GetHashCode();
+			hash = hash * 16777619 + exponent.GetHashCode();
+			return hash;
+		}
+	}
+
+
+	#endregion
+	#region private methods
+
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	static bool _Equals ( double a , double b , double precision ) => Math.Abs(a-b) <= precision;
+
+	static void ToCommonExponent ( ref BFN a , ref BFN b )
+	{
+		if( a.exponent > b.exponent )
+			b.number /= Math.Pow( 10d , a.exponent - b.exponent );
+		else if( b.exponent > a.exponent )
+			a.number /= Math.Pow( 10d , b.exponent - a.exponent );
+	}
+
+
+	#endregion
+	#region public methods
+
+
+	public void Simplify ()
+	{
+		#if UNITY_ASSERTIONS
+		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Simplify)} start" );
+		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Simplify)} start" );
+		#endif
+
+		double log10 = number!=0 ? Math.Log10( number ) : 0;
+		int log10floor = (int) Math.Floor(log10);
+		var frac = number / Math.Pow( 10d , log10floor );
+		int e2 = log10floor + exponent;
+		int e2mod3 = e2 % 3;
+
+		exponent = e2 - e2mod3;
+		number = frac * Math.Pow( 10d , e2mod3 );
+
+		#if UNITY_ASSERTIONS
+		Assert.IsFalse( double.IsNaN(frac) , $"{nameof(frac)} is NaN \t( log10floor: {log10floor}, log10: {log10} )" );
+		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Simplify)} end" );
+		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Simplify)} end" );
+		#endif
+	}
+
+	public string GetExponentName ()
+	{
+		_exponent_names.TryGetValue( exponent , out string result );
+		return result;
+	}
+
+
+	#endregion
+	#region lookup tables
+
+
+	static readonly Dictionary<int,string> _exponent_names = new Dictionary<int,string>{
+		{	-9		,	"Billionth"		} ,
+		{	-6		,	"Millionth"		} ,
+		{	-3		,	"Thousandth"	} ,
+		{	3		,	"Thousands"		} ,
+		{	6		,	"Millions"		} ,
+		{	9		,	"Billions"		} ,
+		{	12		,	"Trillions"		} ,
+		{	15		,	"Quadrillions"	} ,
+		{	18		,	"Quintillion"	} ,
+		{	21		,	"Sextillions"	} ,
+		{	24		,	"Septillions"	} ,
+		{	27		,	"Octillions"	} ,
+		{	30		,	"Nonillions"	} ,
+		{	33		,	"Decillion"		} ,
+	};
+
+
+	#endregion
+	#region property drawer
+
+
+	#if UNITY_EDITOR
+	[CustomPropertyDrawer(typeof(BFN))]
+	public class MyPropertyDrawer : PropertyDrawer
+	{
+		public override void OnGUI ( Rect position , SerializedProperty property , GUIContent label )
+		{
+			BFN bigNumber = (BFN) fieldInfo.GetValue(property.serializedObject.targetObject);
+			var numberProperty = property.FindPropertyRelative( nameof(BFN.number) );
+			var exponentProperty = property.FindPropertyRelative( nameof(BFN.exponent) );
+
+			EditorGUI.BeginProperty( position , label , property );
+			{
+				position = EditorGUI.PrefixLabel( position , GUIUtility.GetControlID(FocusType.Passive) , label );
+				if( GUI.Button( new Rect( position.x , position.y , 21 , position.height ) , new GUIContent("▼", "Simplify") ) )
+				{
+					bigNumber.Simplify();
+					numberProperty.doubleValue = bigNumber.number;
+					exponentProperty.intValue = bigNumber.exponent;
+					property.serializedObject.ApplyModifiedProperties();
+				}
+				position.x += 21;
+				position.width -= 21;
+				float width3 = position.width * 1f/3f;
+				EditorGUI.PropertyField( new Rect( position.x , position.y , width3 , position.height ) , numberProperty , GUIContent.none );
+				EditorGUI.LabelField( new Rect( position.x+width3 , position.y , width3 , position.height ) , $" [{bigNumber.GetExponentName()}]" );
+				EditorGUI.LabelField( new Rect( position.x+width3*2f , position.y , 21 , position.height ) , new GUIContent("E", "Exponent. For example: \"3\" means \"1000\".") );
+				EditorGUI.PropertyField( new Rect( position.x+width3*2f+21 , position.y , width3-21 , position.height ) , exponentProperty , GUIContent.none );
+			}
+			EditorGUI.EndProperty();
+		}
+	}
+	#endif
+
+
+	#endregion
+}
