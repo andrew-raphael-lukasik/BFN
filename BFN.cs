@@ -136,6 +136,15 @@ public struct BFN
 		_exponent_names.TryGetValue( exponent , out string result );
 		return result;
 	}
+	public bool GetExponentName ( out string result )
+	{
+		if( !_exponent_names.TryGetValue( exponent , out result ) )
+		{
+			result = $"E{exponent}";
+			return false;
+		}
+		return true;
+	}
 
 
 	#endregion
