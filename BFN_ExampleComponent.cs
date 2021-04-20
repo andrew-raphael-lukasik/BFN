@@ -6,5 +6,10 @@ public class BFN_ExampleComponent : MonoBehaviour
 	void Start ()
 	{
 		Debug.Log($"my number is: {_myBigNumber}");
+
+		var a = BFN.Trillion;
+		var b = new BFN( 1234 , 6 );
+		var adivc = a / b;
+		Debug.Log($"{BFN.Trillion} divided by {b} is {adivc}");
 	}
 }
