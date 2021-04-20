@@ -41,6 +41,9 @@ public struct BFN
 	#region operators
 
 
+	public static explicit operator double ( BFN value ) => value.number * Math.Pow(10d,value.exponent);
+	public static explicit operator BFN ( double value ) => new BFN(value,0);
+
 	public static bool operator == ( BFN a , BFN b ) => a.exponent==b.exponent && _Equals(a.number,b.number,1e-1000d);
 	public static bool operator != ( BFN a , BFN b ) => !(a==b);
 
@@ -49,13 +52,17 @@ public struct BFN
 		ToCommonExponent( ref a , ref b );
 		return new BFN{ number = a.number + b.number , exponent = a.exponent }.compressed;
 	}
+	public static BFN operator + ( BFN a , double b ) => ( a + new BFN(b,0).compressed ).compressed;
 	public static BFN operator - ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
 		return new BFN{ number = a.number - b.number , exponent = a.exponent }.compressed;
 	}
+	public static BFN operator - ( BFN a , double b ) => ( a - new BFN(b,0).compressed ).compressed;
 	public static BFN operator * ( BFN a , BFN b ) => new BFN{ number = a.number * b.number , exponent = a.exponent * b.exponent }.compressed;
-	public static BFN operator / ( BFN a , BFN b ) => new BFN{ number = a.number / b.number , exponent = a.exponent - b.exponent }.compressed;
+	public static BFN operator * ( BFN a , double b ) => ( a * new BFN(b,0).compressed ).compressed;
+	public static BFN operator / ( BFN a , BFN b ) => new BFN( a.number/b.number , a.exponent-b.exponent ).compressed;
+	public static BFN operator / ( BFN a , double b ) => ( a / new BFN(b,0).compressed ).compressed;
 
 
 	#endregion
