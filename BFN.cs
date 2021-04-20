@@ -59,7 +59,7 @@ public struct BFN
 		return new BFN{ number = a.number - b.number , exponent = a.exponent }.compressed;
 	}
 	public static BFN operator - ( BFN a , double b ) => ( a - new BFN(b,0).compressed ).compressed;
-	public static BFN operator * ( BFN a , BFN b ) => new BFN{ number = a.number * b.number , exponent = a.exponent * b.exponent }.compressed;
+	public static BFN operator * ( BFN a , BFN b ) => new BFN{ number = a.number * b.number , exponent = a.exponent + b.exponent }.compressed;
 	public static BFN operator * ( BFN a , double b ) => ( a * new BFN(b,0).compressed ).compressed;
 	public static BFN operator / ( BFN a , BFN b ) => new BFN( a.number/b.number , a.exponent-b.exponent ).compressed;
 	public static BFN operator / ( BFN a , double b ) => ( a / new BFN(b,0).compressed ).compressed;
