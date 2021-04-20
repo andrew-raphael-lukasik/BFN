@@ -1,4 +1,4 @@
-# BFN
+# Big F_____ Number
 Structure to help store and represent very big numbers in Unity
 
 ```csharp
