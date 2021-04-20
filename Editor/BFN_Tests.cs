@@ -20,7 +20,8 @@ public class BFN_Tests
     [Test] public void addition_3 () => Assert.AreEqual( expected:new BFN(30.000004,9) , actual:new BFN(3,10) + new BFN(4,3) );
     [Test] public void subtraction_1 () => Assert.AreEqual( expected:new BFN(29.999996,9) , actual:new BFN(3,10) - new BFN(4,3) );
     
-    [Test] public void multiplication_1 () => Assert.AreEqual( expected:new BFN(1.2,14).compressed , actual:new BFN(3,10) * new BFN(4,3) );
+    [Test] public void multiplication_1 () => Assert.AreEqual( expected:new BFN(600,0).compressed , actual:new BFN(2,1) * new BFN(3,1) );
+    [Test] public void multiplication_2 () => Assert.AreEqual( expected:new BFN(1.2,14).compressed , actual:new BFN(3,10) * new BFN(4,3) );
     
     [Test] public void division_1 () => Assert.AreEqual( expected:new BFN(7.5,6) , actual:new BFN(3,10) / new BFN(4,3) );
 
