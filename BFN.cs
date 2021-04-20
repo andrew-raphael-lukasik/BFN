@@ -20,6 +20,17 @@ public struct BFN
 
 
 	#endregion
+	#region constructors
+
+
+	public BFN ( double number , int exponent )
+	{
+		this.number = number;
+		this.exponent = exponent;
+	}
+
+
+	#endregion
 	#region properties
 
 
