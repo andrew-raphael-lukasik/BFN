@@ -1,3 +1,5 @@
+warning: this is work in progress, expect bug etc.
+
 # Big F_____ Number
 Structure to help you store, represent and operate on very big numbers in Unity.
 
