@@ -34,7 +34,7 @@ public struct BFN
 	#region properties
 
 
-	public BFN simplified { get{ var copy = this; copy.Simplify(); return copy; } }
+	public BFN compressed { get{ var copy = this; copy.Compress(); return copy; } }
 
 
 	#endregion
@@ -47,22 +47,22 @@ public struct BFN
 	public static BFN operator + ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number + b.number , exponent = a.exponent };
+		return new BFN{ number = a.number + b.number , exponent = a.exponent }.compressed;
 	}
 	public static BFN operator - ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number - b.number , exponent = a.exponent };
+		return new BFN{ number = a.number - b.number , exponent = a.exponent }.compressed;
 	}
 	public static BFN operator * ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number * b.number , exponent = a.exponent };
+		return new BFN{ number = a.number * b.number , exponent = a.exponent }.compressed;
 	}
 	public static BFN operator / ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number / b.number , exponent = a.exponent };
+		return new BFN{ number = a.number / b.number , exponent = a.exponent }.compressed;
 	}
 
 
@@ -108,11 +108,12 @@ public struct BFN
 	#region public methods
 
 
-	public void Simplify ()
+	/// <summary> Attempts to pack stored value to prevent number component from losing it's accuracy. </summary>
+	public void Compress ()
 	{
 		#if UNITY_ASSERTIONS
-		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Simplify)} start" );
-		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Simplify)} start" );
+		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Compress)} start" );
+		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Compress)} start" );
 		#endif
 
 		double log10 = number!=0 ? Math.Log10( number ) : 0;
@@ -126,8 +127,8 @@ public struct BFN
 
 		#if UNITY_ASSERTIONS
 		Assert.IsFalse( double.IsNaN(frac) , $"{nameof(frac)} is NaN \t( log10floor: {log10floor}, log10: {log10} )" );
-		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Simplify)} end" );
-		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Simplify)} end" );
+		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Compress)} end" );
+		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Compress)} end" );
 		#endif
 	}
 
@@ -177,9 +178,9 @@ public struct BFN
 			EditorGUI.BeginProperty( position , label , property );
 			{
 				position = EditorGUI.PrefixLabel( position , GUIUtility.GetControlID(FocusType.Passive) , label );
-				if( GUI.Button( new Rect( position.x , position.y , 21 , position.height ) , new GUIContent("▼", "Simplify") ) )
+				if( GUI.Button( new Rect( position.x , position.y , 21 , position.height ) , new GUIContent("▼", "Compress numerical value. For example: \"1000\" will become \"1E3\".") ) )
 				{
-					bigNumber.Simplify();
+					bigNumber.Compress();
 					numberProperty.doubleValue = bigNumber.number;
 					exponentProperty.intValue = bigNumber.exponent;
 					property.serializedObject.ApplyModifiedProperties();
@@ -189,7 +190,7 @@ public struct BFN
 				float width3 = position.width * 1f/3f;
 				EditorGUI.PropertyField( new Rect( position.x , position.y , width3 , position.height ) , numberProperty , GUIContent.none );
 				EditorGUI.LabelField( new Rect( position.x+width3 , position.y , width3 , position.height ) , $" [{bigNumber.GetExponentName()}]" );
-				EditorGUI.LabelField( new Rect( position.x+width3*2f , position.y , 21 , position.height ) , new GUIContent("E", "Exponent. For example: \"3\" means \"1000\".") );
+				EditorGUI.LabelField( new Rect( position.x+width3*2f , position.y , 21 , position.height ) , new GUIContent("E", "Exponent. For example: \"3\" means \"1000\" (also \"1E3\").") );
 				EditorGUI.PropertyField( new Rect( position.x+width3*2f+21 , position.y , width3-21 , position.height ) , exponentProperty , GUIContent.none );
 			}
 			EditorGUI.EndProperty();
