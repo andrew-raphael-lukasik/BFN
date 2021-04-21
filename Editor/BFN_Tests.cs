@@ -47,7 +47,6 @@ namespace BFN_Tests
 		[Test] public void _1e4__1 () => Assert.AreEqual( expected:new BFN(10.001,3) , actual:new BFN(1,4) + 1 );
 	}
 	
-
 	public class subtraction
 	{
 		[Test] public void _1e0__1e0 () => Assert.AreEqual( expected:new BFN(0,0) , actual:new BFN(1,0) - new BFN(1,0) );
@@ -67,6 +66,8 @@ namespace BFN_Tests
 		[Test] public void _0e0__0e0 () => Assert.AreEqual( expected:new BFN(0,0) , actual:new BFN(0,0) * new BFN(0,0) );
 
 		[Test] public void _1e4__1 () => Assert.AreEqual( expected:new BFN(2,4) , actual:new BFN(1,4) * 2 );
+		[Test] public void _1e4__10 () => Assert.AreEqual( expected:new BFN(1,5) , actual:new BFN(1,4) * 10 );
+		[Test] public void _1e4__10000 () => Assert.AreEqual( expected:new BFN(1,8) , actual:new BFN(1,4) * 10000 );
 	}
 	
 	public class division
