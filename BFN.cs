@@ -38,13 +38,24 @@ public struct BFN
 
 
 	#endregion
+	#region constants
+
+
+	public const double k_equality_comparison_precision = 1E-1000d;
+
+
+	#endregion
 	#region operators
 
 
 	public static explicit operator double ( BFN value ) => value.number * Math.Pow(10d,value.exponent);
 	public static explicit operator BFN ( double value ) => new BFN(value,0);
 
-	public static bool operator == ( BFN a , BFN b ) => a.exponent==b.exponent && _Equals(a.number,b.number,1e-1000d);
+	public static bool operator == ( BFN a , BFN b )
+	{
+		ToCommonExponent( ref a , ref b );
+		return a.exponent==b.exponent && _Equals(a.number,b.number,k_equality_comparison_precision);
+	}
 	public static bool operator != ( BFN a , BFN b ) => !(a==b);
 
 	public static BFN operator + ( BFN a , BFN b )
@@ -77,11 +88,12 @@ public struct BFN
 	/// <remarks> Modify this method to fit your specific use case. </remarks>
 	public override int GetHashCode ()
 	{
+		var copy = this.compressed;
 		unchecked
 		{
 			int hash = 486187739;
-			hash = hash * 16777619 + number.GetHashCode();
-			hash = hash * 16777619 + exponent.GetHashCode();
+			hash = hash * 16777619 + copy.number.GetHashCode();
+			hash = hash * 16777619 + copy.exponent.GetHashCode();
 			return hash;
 		}
 	}
