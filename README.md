@@ -33,3 +33,7 @@ Will produce this Inpector view:
 ![sdas](https://i.imgur.com/ulyUl2E.jpg)
 
 Where ▼ button will help you simplify (compress) numbers for shorter notation. For example `( num=5000 , e=0 )` will become `( num=5 , e=3 )`.
+
+---
+
+* "F_____" stands for "double-precision floating-point"
