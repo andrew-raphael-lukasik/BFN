@@ -96,9 +96,10 @@ public struct BFN
 
 	static void ToCommonExponent ( ref BFN a , ref BFN b )
 	{
-		if( a.exponent > b.exponent )
+		if( a.exponent==b.exponent ) return;
+		else if( a.exponent > b.exponent )
 			b.number /= Math.Pow( 10d , a.exponent - b.exponent );
-		else if( b.exponent > a.exponent )
+		else// if( b.exponent > a.exponent )
 			a.number /= Math.Pow( 10d , b.exponent - a.exponent );
 	}
 
