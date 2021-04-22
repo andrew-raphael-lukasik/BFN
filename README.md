@@ -1,5 +1,5 @@
 ```diff
-! This repo is a work in progress. Look at unit tests; expect possible bugs outside their limited coverage.
+! This repo is a work in progress, expect bugs.
 ```
 
 # Big F_____ Number
