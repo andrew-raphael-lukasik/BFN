@@ -38,13 +38,6 @@ public struct BFN
 
 
 	#endregion
-	#region constants
-
-
-	public const double k_equality_comparison_precision = 1E-1000d;
-
-
-	#endregion
 	#region operators
 
 
@@ -55,7 +48,7 @@ public struct BFN
 	{
 		a.Compress();
 		b.Compress();
-		return a.exponent==b.exponent && _Equals(a.number,b.number,k_equality_comparison_precision);
+		return a.exponent==b.exponent && _Approx(a.number,b.number);
 	}
 	public static bool operator != ( BFN a , BFN b ) => !(a==b);
 
@@ -105,7 +98,12 @@ public struct BFN
 
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static bool _Equals ( double a , double b , double precision ) => Math.Abs(a-b) <= precision;
+	static bool _Approx ( double a , double b )
+	{
+		const double precision = 1E-14;
+		// Debug.Log($"{nameof(_Approx)}: {Math.Abs(a-b)} <= {precision}");
+		return Math.Abs(a-b) <= precision;
+	}
 
 	static void ToCommonExponent ( ref BFN a , ref BFN b )
 	{
