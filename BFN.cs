@@ -53,7 +53,8 @@ public struct BFN
 
 	public static bool operator == ( BFN a , BFN b )
 	{
-		ToCommonExponent( ref a , ref b );
+		a.Compress();
+		b.Compress();
 		return a.exponent==b.exponent && _Equals(a.number,b.number,k_equality_comparison_precision);
 	}
 	public static bool operator != ( BFN a , BFN b ) => !(a==b);
