@@ -48,7 +48,7 @@ public struct BFN
 	{
 		a.Compress();
 		b.Compress();
-		return a.exponent==b.exponent && _Approx(a.number,b.number);
+		return a.exponent==b.exponent && Approx(a.number,b.number);
 	}
 	public static bool operator != ( BFN a , BFN b ) => !(a==b);
 
@@ -94,31 +94,34 @@ public struct BFN
 
 
 	#endregion
-	#region private methods
+	#region public methods
 
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static bool _Approx ( double a , double b )
+	public static bool Approx ( double a , double b )
 	{
 		const double precision = 1E-14;
 		// Debug.Log($"{nameof(_Approx)}: {Math.Abs(a-b)} <= {precision}");
 		return Math.Abs(a-b) <= precision;
 	}
 
-	static void ToCommonExponent ( ref BFN a , ref BFN b )
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void ToCommonExponent ( ref BFN a , ref BFN b )
 	{
 		if( a.exponent==b.exponent ) return;
 		else if( a.exponent > b.exponent )
-			b.number /= Math.Pow( 10d , a.exponent - b.exponent );
+		{
+			b.number /= a.number * Math.Pow( 10d , a.exponent - b.exponent );
+			b.exponent = a.exponent;
+		}
 		else// if( b.exponent > a.exponent )
-			a.number /= Math.Pow( 10d , b.exponent - a.exponent );
+		{
+			a.number /= b.number * Math.Pow( 10d , b.exponent - a.exponent );
+			a.exponent = b.exponent;
+		}
 	}
 
-
-	#endregion
-	#region public methods
-
-
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	/// <summary> Attempts to pack stored value to prevent number component from losing it's accuracy. </summary>
 	public void Compress ()
 	{
