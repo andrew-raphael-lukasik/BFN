@@ -7,12 +7,12 @@ Structure to help you store, represent and operate on very big numbers in Unity.
 
 ---
 ### Define "big numbers"
-It's a `double` with auxiliary `int` exponent.
+It's a `Double` with auxiliary `Int64` exponent.
 ```c#
-BFN.MaxValue = double.MaxValue * Math.Pow( 10d , int.MaxValue );
-BFN.MinValue = double.MinValue * Math.Pow( 10d , int.MinValue );
+BFN.MaxValue = Double.MaxValue * Math.Pow( 10d , Int64.MaxValue );// +1.7976931348623157 E+9223372036854776115
+BFN.MinValue = Double.MinValue * Math.Pow( 10d , Int64.MinValue );// -1.7976931348623157 E-9223372036854775500
 ```
-These numbers are large enough to make most software refuse to calculate them and just print "Infinity".
+These numbers are large enough to make most software refuse to calculate them and just print "infinity" or "invalid input".
 
 ---
 ### Can I see it in the `Inspector` window serialized there?
