@@ -16,14 +16,14 @@ public struct BFN
 
 
 	public double number;
-	public int exponent;
+	public long exponent;
 
 
 	#endregion
 	#region constructors
 
 
-	public BFN ( double number , int exponent )
+	public BFN ( double number , long exponent )
 	{
 		this.number = number;
 		this.exponent = exponent;
@@ -128,10 +128,10 @@ public struct BFN
 		#endif
 
 		double log10 = number!=0 ? Math.Log10( number ) : 0;
-		int log10floor = (int) Math.Floor(log10);
+		long log10floor = (long) Math.Floor(log10);
 		var frac = number / Math.Pow( 10d , log10floor );
-		int e2 = log10floor + exponent;
-		int e2mod3 = e2 % 3;
+		long e2 = log10floor + exponent;
+		long e2mod3 = e2 % 3;
 
 		exponent = e2 - e2mod3;
 		number = frac * Math.Pow( 10d , e2mod3 );
@@ -163,7 +163,7 @@ public struct BFN
 	#region lookup tables
 
 
-	static readonly Dictionary<int,string> _exponent_names = new Dictionary<int,string>{
+	static readonly Dictionary<long,string> _exponent_names = new Dictionary<long,string>{
 		{	-9		,	"Billionth"				} ,
 		{	-6		,	"Millionth"				} ,
 		{	-3		,	"Thousandth"			} ,
@@ -217,7 +217,7 @@ public struct BFN
 				{
 					bigNumber.Compress();
 					numberProperty.doubleValue = bigNumber.number;
-					exponentProperty.intValue = bigNumber.exponent;
+					exponentProperty.longValue = bigNumber.exponent;
 					property.serializedObject.ApplyModifiedProperties();
 				}
 				position.x += 21;
