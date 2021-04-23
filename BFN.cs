@@ -44,18 +44,30 @@ public struct BFN
 	public static explicit operator double ( BFN value ) => value.number * Math.Pow(10d,value.exponent);
 	public static explicit operator BFN ( double value ) => new BFN(value,0);
 
-	public static bool operator == ( BFN a , BFN b )
+	public static bool operator == ( BFN a , BFN b ) => Equals( a:a , b:b );
+	public static bool operator != ( BFN a , BFN b ) => !Equals( a:a , b:b );
+
+	public static bool operator > ( BFN a , BFN b )
 	{
 		a.Compress();
 		b.Compress();
-		return a.exponent==b.exponent && Approx(a.number,b.number);
+		ToCommonExponent( ref a , ref b );
+		return a.number > b.number;
 	}
-	public static bool operator != ( BFN a , BFN b ) => !(a==b);
+
+	public static bool operator < ( BFN a , BFN b )
+	{
+		a.Compress();
+		b.Compress();
+		ToCommonExponent( ref a , ref b );
+		return a.number < b.number;
+	}
 
 	public static BFN operator + ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number + b.number , exponent = a.exponent }.compressed;
+		BFN result = new BFN{ number = a.number + b.number , exponent = a.exponent }.compressed;
+		return result;
 	}
 	public static BFN operator + ( BFN a , double b ) => ( a + new BFN(b,0).compressed ).compressed;
 	public static BFN operator - ( BFN a , BFN b )
@@ -76,7 +88,7 @@ public struct BFN
 
 	public override string ToString () => $"{number} {GetExponentName()}";
 	
-	public override bool Equals ( object obj ) => obj!=null ? this==(BFN) obj : false;
+	public override bool Equals ( object obj ) => obj!=null ? Equals( a:this , b:(BFN)obj ) : false;
 
 	/// <summary> I think this exponent.GetHashCode() will fully ignore numerical proximity, which is not fine is some cases, but fine for others. </summary>
 	/// <remarks> Modify this method to fit your specific use case. </remarks>
@@ -97,6 +109,16 @@ public struct BFN
 	#region public methods
 
 
+	public string ToStringPrecise () => $"{number.ToString("G17")}e{exponent.ToString("G17")}";
+
+	public static bool Equals ( BFN a , BFN b )
+	{
+		a.Compress();
+		b.Compress();
+		bool result = a.exponent==b.exponent && Approx(a.number,b.number);
+		return result;
+	}
+
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool Approx ( double a , double b )
 	{
@@ -111,12 +133,12 @@ public struct BFN
 		if( a.exponent==b.exponent ) return;
 		else if( a.exponent > b.exponent )
 		{
-			b.number /= a.number * Math.Pow( 10d , a.exponent - b.exponent );
+			b.number /= Math.Pow( 10d , a.exponent - b.exponent );
 			b.exponent = a.exponent;
 		}
 		else// if( b.exponent > a.exponent )
 		{
-			a.number /= b.number * Math.Pow( 10d , b.exponent - a.exponent );
+			a.number /= Math.Pow( 10d , b.exponent - a.exponent );
 			a.exponent = b.exponent;
 		}
 	}
