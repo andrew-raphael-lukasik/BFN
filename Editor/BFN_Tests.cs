@@ -38,11 +38,19 @@ namespace BFN_Tests
 	{
 		[Test] public void _1e1__2e2 ()
 		{
-			BFN a = new BFN{ number=1 , exponent=1 }, original_a = a;
-			BFN b = new BFN{ number=2 , exponent=2 }, original_b = b;
+			BFN a = new BFN{ number=1 , exponent=1 }, original_a = a;// 10		1e1		->	0.1e2
+			BFN b = new BFN{ number=2 , exponent=2 }, original_b = b;// 200		2e2
 			BFN.ToCommonExponent( ref a , ref b );
 			Assert.AreEqual( expected:original_b , actual:b );
-			Assert.AreEqual( expected:new BFN{ number=0.05d , exponent=2 } , actual:a );
+			Assert.AreEqual( expected:new BFN{ number=0.1d , exponent=2 } , actual:a );
+		}
+		[Test] public void _1e15__1e2 ()
+		{
+			BFN a = new BFN{ number=1 , exponent=15 }, original_a = a;
+			BFN b = new BFN{ number=1 , exponent=2 }, original_b = b;
+			BFN.ToCommonExponent( ref a , ref b );
+			Assert.AreEqual( expected:original_a , actual:a );
+			Assert.AreEqual( expected:new BFN{ number=1e-13 , exponent=15 } , actual:b );
 		}
 	}
 
@@ -59,42 +67,78 @@ namespace BFN_Tests
 	
 	public class addition
 	{
-		[Test] public void _11e0__200e0 () => Assert.AreEqual( expected:new BFN(210,0) , actual:new BFN(10,0) + new BFN(200,0) );
-		[Test] public void _1e1__2e2 () => Assert.AreEqual( expected:new BFN(210,0) , actual:new BFN(1,1) + new BFN(2,2) );
-		[Test] public void _2e2__1e1 () => Assert.AreEqual( expected:new BFN(210,0) , actual:new BFN(2,2) + new BFN(1,1) );
-		[Test] public void _1e4__2e3 () => Assert.AreEqual( expected:new BFN(12,3) , actual:new BFN(1,4) + new BFN(2,3) );
-		[Test] public void _2dot3e0__1dot2e0 () => Assert.AreEqual( expected:new BFN(3.5,0) , actual:new BFN(2.3,0) + new BFN(1.2,0) );
-		[Test] public void _9dot87654321e33__1dot23456789e14 () => Assert.AreEqual( expected:new BFN(9.87654321,33) , actual:new BFN(9.87654321,33) + new BFN(1.23456789,14) );
-		[Test] public void _3e10__4e3 () => Assert.AreEqual( expected:new BFN(30.000004,9) , actual:new BFN(3,10) + new BFN(4,3) );
-		[Test] public void _1e14__0e13 () => Assert.AreEqual( expected:new BFN(1,14) , actual:new BFN(1,14) + new BFN(0,13) );
-		[Test] public void _1e14__0en13 () => Assert.AreEqual( expected:new BFN(1,14) , actual:new BFN(1,14) + new BFN(0,-13) );
-		[Test] public void _n1en14__0en13 () => Assert.AreEqual( expected:new BFN(-1,-14) , actual:new BFN(-1,-14) + new BFN(0,-13) );
-		[Test] public void _0e0__0e0 () => Assert.AreEqual( expected:new BFN(0,0) , actual:new BFN(0,0) + new BFN(0,0) );
+		[Test] public void _11e0__200e0 () => _Add( expected:new BFN(210,0) , new BFN(10,0) , new BFN(200,0) );
+		[Test] public void _1e1__2e2 () => _Add( expected:new BFN(210,0) , new BFN(1,1) , new BFN(2,2) );
+		[Test] public void _2e2__1e1 () => _Add( expected:new BFN(210,0) , new BFN(2,2) , new BFN(1,1) );
+		[Test] public void _1e4__2e3 () => _Add( expected:new BFN(12,3) , new BFN(1,4) , new BFN(2,3) );
+		[Test] public void _2dot3e0__1dot2e0 () => _Add( expected:new BFN(3.5,0) , new BFN(2.3,0) , new BFN(1.2,0) );
+		[Test] public void _9dot87654321e33__1dot23456789e14 () => _Add( expected:new BFN(9.87654321,33) , new BFN(9.87654321,33) , new BFN(1.23456789,14) );
+		[Test] public void _3e10__4e3 () => _Add( expected:new BFN(30.000004,9) , new BFN(3,10) , new BFN(4,3) );
+		[Test] public void _1e14__0e13 () => _Add( expected:new BFN(1,14) , new BFN(1,14) , new BFN(0,13) );
+		[Test] public void _1e14__0en13 () => _Add( expected:new BFN(1,14) , new BFN(1,14) , new BFN(0,-13) );
+		[Test] public void _n1en14__0en13 () => _Add( expected:new BFN(-1,-14) , new BFN(-1,-14) , new BFN(0,-13) );
+		[Test] public void _0e0__0e0 () => _Add( expected:new BFN(0,0) , new BFN(0,0) , new BFN(0,0) );
+		[Test] public void _11e21__33e100 () => _Add( expected:new BFN(3.30000000000000000000000000000000000000000000000000000000000000000000000000000011,101) , new BFN(11,21) , new BFN(33,100) );
 
-		[Test] public void _1e4__1 () => Assert.AreEqual( expected:new BFN(10.001,3) , actual:new BFN(1,4) + 1 );
+		[Test] public void _1e4__1 () => _Add( expected:new BFN(10.001,3) , new BFN(1,4) , 1 );
+
+		[Test] public void _G17 () => Debug.Log($"{0.1234567890_1234567890_1234567890_1234567890_1234567890d:G17}{double.MaxValue}");
+
+		void _Add ( BFN expected , BFN L , BFN R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} + {R.ToStringPrecise()}\texpecting:{expected.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L + R );
+		}
+		void _Add ( BFN expected , BFN L , double R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} + {R.ToString("G17")}\texpecting:{expected.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L + R );
+		}
 	}
 	
 	public class subtraction
 	{
-		[Test] public void _1e0__1e0 () => Assert.AreEqual( expected:new BFN(0,0) , actual:new BFN(1,0) - new BFN(1,0) );
-		[Test] public void _1e0__2e0 () => Assert.AreEqual( expected:new BFN(-1,0) , actual:new BFN(1,0) - new BFN(2,0) );
-		[Test] public void _3e10__4e3 () => Assert.AreEqual( expected:new BFN(29.999996,9) , actual:new BFN(3,10) - new BFN(4,3) );
-		[Test] public void _1e100__1e70 () => Assert.AreEqual( expected:new BFN(1,100) , actual:new BFN(1,100) - new BFN(1,70) );
-		[Test] public void _1e10__0e10 () => Assert.AreEqual( expected:new BFN(1,10) , actual:new BFN(1,10) - new BFN(0,10) );
-		[Test] public void _0e0__0e0 () => Assert.AreEqual( expected:new BFN(0,0) , actual:new BFN(0,0) - new BFN(0,0) );
+		[Test] public void _1e0__1e0 () => _Subtract( expected:new BFN(0,0) , new BFN(1,0) , new BFN(1,0) );
+		[Test] public void _1e0__2e0 () => _Subtract( expected:new BFN(-1,0) , new BFN(1,0) , new BFN(2,0) );
+		[Test] public void _3e10__4e3 () => _Subtract( expected:new BFN(29.999996,9) , new BFN(3,10) , new BFN(4,3) );
+		[Test] public void _1e100__1e70 () => _Subtract( expected:new BFN(1,100) , new BFN(1,100) , new BFN(1,70) );
+		[Test] public void _1e10__0e10 () => _Subtract( expected:new BFN(1,10) , new BFN(1,10) , new BFN(0,10) );
+		[Test] public void _0e0__0e0 () => _Subtract( expected:new BFN(0,0) , new BFN(0,0) , new BFN(0,0) );
 
-		[Test] public void _1e4__1 () => Assert.AreEqual( expected:new BFN(9.999,3) , actual:new BFN(1,4) - 1 );
+		[Test] public void _1e4__1 () => _Subtract( expected:new BFN(9.999,3) , new BFN(1,4) , 1 );
+
+		void _Subtract ( BFN expected , BFN L , BFN R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} - {R.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L - R );
+		}
+		void _Subtract ( BFN expected , BFN L , double R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} - {R.ToString("G17")}");
+			Assert.AreEqual( expected:expected , actual: L - R );
+		}
 	}
 	
 	public class multiplication
 	{
-		[Test] public void _2e1__3e1 () => Assert.AreEqual( expected:new BFN(600,0).compressed , actual:new BFN(2,1) * new BFN(3,1) );
-		[Test] public void _3e10__4e3 () => Assert.AreEqual( expected:new BFN(1.2,14).compressed , actual:new BFN(3,10) * new BFN(4,3) );
-		[Test] public void _0e0__0e0 () => Assert.AreEqual( expected:new BFN(0,0) , actual:new BFN(0,0) * new BFN(0,0) );
+		[Test] public void _2e1__3e1 () => _Multiply( expected:new BFN(600,0).compressed , new BFN(2,1) , new BFN(3,1) );
+		[Test] public void _3e10__4e3 () => _Multiply( expected:new BFN(1.2,14).compressed , new BFN(3,10) , new BFN(4,3) );
+		[Test] public void _0e0__0e0 () => _Multiply( expected:new BFN(0,0) , new BFN(0,0) , new BFN(0,0) );
 
-		[Test] public void _1e4__1 () => Assert.AreEqual( expected:new BFN(2,4) , actual:new BFN(1,4) * 2 );
-		[Test] public void _1e4__10 () => Assert.AreEqual( expected:new BFN(1,5) , actual:new BFN(1,4) * 10 );
-		[Test] public void _1e4__10000 () => Assert.AreEqual( expected:new BFN(1,8) , actual:new BFN(1,4) * 10000 );
+		[Test] public void _1e4__1 () => _Multiply( expected:new BFN(2,4) , new BFN(1,4) , 2 );
+		[Test] public void _1e4__10 () => _Multiply( expected:new BFN(1,5) , new BFN(1,4) , 10 );
+		[Test] public void _1e4__10000 () => _Multiply( expected:new BFN(1,8) , new BFN(1,4) , 10000 );
+
+		void _Multiply ( BFN expected , BFN L , BFN R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} * {R.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L * R );
+		}
+		void _Multiply ( BFN expected , BFN L , double R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} * {R.ToString("G17")}");
+			Assert.AreEqual( expected:expected , actual: L * R );
+		}
 	}
 	
 	public class division
@@ -103,7 +147,52 @@ namespace BFN_Tests
 		[Test] public void _3e10__4e3 () => Assert.AreEqual( expected:new BFN(7.5,6) , actual:new BFN(3,10) / new BFN(4,3) );
 
 		[Test] public void _1e3__2 () => Assert.AreEqual( expected:new BFN(500,0) , actual:new BFN(1,3) / 2 );
-		[Test] public void _1e4__1 () => Assert.AreEqual( expected:new BFN(5,3) , actual:new BFN(1,4) / 2 );
+		[Test] public void _1e4__2 () => Assert.AreEqual( expected:new BFN(5,3) , actual:new BFN(1,4) / 2 );
+
+		void _Divide ( BFN expected , BFN L , BFN R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} / {R.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L / R );
+		}
+	}
+
+
+	public class greater_than
+	{
+		[Test] public void _0e0__0e0 () => _Greater( expected:false , new BFN(0,0) , new BFN(0,0) );
+		[Test] public void _1e0__1e0 () => _Greater( expected:false , new BFN(1,0) , new BFN(1,0) );
+		[Test] public void _n1e0__n1e0 () => _Greater( expected:false , new BFN(-1,0) , new BFN(-1,0) );
+		[Test] public void _n1e0__1e0 () => _Greater( expected:false , new BFN(-1,0) , new BFN(1,0) );
+		[Test] public void _1e0__n1e0 () => _Greater( expected:true , new BFN(1,0) , new BFN(-1,0) );
+		[Test] public void _n1e0__0e0 () => _Greater( expected:false , new BFN(-1,0) , new BFN(0,0) );
+
+		[Test] public void _5e3__1e4 () => _Greater( expected:false , new BFN(5,3) , new BFN(1,4) );
+		[Test] public void _1e4__5e3 () => _Greater( expected:true , new BFN(1,4) , new BFN(5,3) );
+
+		void _Greater ( bool expected , BFN L , BFN R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} > {R.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L > R );
+		}
+	}
+
+	public class less_than
+	{
+		[Test] public void _0e0__0e0 () => _Less( expected:false , new BFN(0,0) , new BFN(0,0) );
+		[Test] public void _1e0__1e0 () => _Less( expected:false , new BFN(1,0) , new BFN(1,0) );
+		[Test] public void _n1e0__n1e0 () => _Less( expected:false , new BFN(-1,0) , new BFN(-1,0) );
+		[Test] public void _n1e0__1e0 () => _Less( expected:true , new BFN(-1,0) , new BFN(1,0) );
+		[Test] public void _1e0__n1e0 () => _Less( expected:false , new BFN(1,0) , new BFN(-1,0) );
+		[Test] public void _n1e0__0e0 () => _Less( expected:true , new BFN(-1,0) , new BFN(0,0) );
+
+		[Test] public void _5e3__1e4 () => _Less( expected:true , new BFN(5,3) , new BFN(1,4) );
+		[Test] public void _1e4__5e3 () => _Less( expected:false , new BFN(1,4) , new BFN(5,3) );
+
+		void _Less ( bool expected , BFN L , BFN R )
+		{
+			Debug.Log($"\tTesting: {L.ToStringPrecise()} < {R.ToStringPrecise()}");
+			Assert.AreEqual( expected:expected , actual: L < R );
+		}
 	}
 
 }
