@@ -17,7 +17,7 @@ Yes:
 using UnityEngine;
 public class BFN_ExampleComponent : MonoBehaviour
 {
-	[SerializeField] BFN _myBigNumber = new BFN{ number=11.2423085208 , exponent=21 };
+	[SerializeField] BFN _myBigNumber = new BFN( 11.2423085208 , 21 );
 	void Start ()
 	{
 		Debug.Log($"my number is: {_myBigNumber}");
