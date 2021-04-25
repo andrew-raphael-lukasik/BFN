@@ -1,5 +1,5 @@
 # Big F_____ Number
-Structure to help you store, represent and operate on very big numbers in Unity. This one is for cases where you want to separate base numbers from their exponents.
+Structure to help you store, represent and operate on very big numbers in Unity. This one is for cases where you want to separate fractions from their exponents.
 
 ---
 ### Define "big numbers"
