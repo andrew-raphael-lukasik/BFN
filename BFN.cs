@@ -147,25 +147,20 @@ public struct BFN
 	/// <summary> Attempts to pack stored value to prevent number component from losing it's accuracy. </summary>
 	public void Compress ()
 	{
-		#if UNITY_ASSERTIONS
-		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Compress)} start" );
-		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Compress)} start" );
-		#endif
-
-		double log10 = number!=0 ? Math.Log10( number ) : 0;
-		long log10floor = (long) Math.Floor(log10);
-		var frac = number / Math.Pow( 10d , log10floor );
-		long e2 = log10floor + exponent;
+		long e2 = 0;
+		double frac = 0;
+		int sign = Math.Sign( number );
+		if( sign!=0 )
+		{
+			double log10 = Math.Log10( Math.Abs(number) ) * (double) sign;
+			long log10floor = (long) Math.Floor(log10);
+			frac = number / Math.Pow( 10d , log10floor );
+			e2 = log10floor + exponent;
+		}
 		long e2mod3 = e2 % 3;
-
+		
 		exponent = e2 - e2mod3;
 		number = frac * Math.Pow( 10d , e2mod3 );
-
-		#if UNITY_ASSERTIONS
-		Assert.IsFalse( double.IsNaN(frac) , $"{nameof(frac)} is NaN \t( log10floor: {log10floor}, log10: {log10} )" );
-		Assert.IsFalse( double.IsNaN(exponent) , $"{nameof(exponent)} is NaN, on {nameof(Compress)} end" );
-		Assert.IsFalse( double.IsNaN(number) , $"{nameof(number)} is NaN, on {nameof(Compress)} end" );
-		#endif
 	}
 
 	public string GetExponentName ()
