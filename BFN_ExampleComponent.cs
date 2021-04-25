@@ -2,8 +2,8 @@
 using UnityEngine;
 public class BFN_ExampleComponent : MonoBehaviour
 {
-	[SerializeField] BFN _a = new BFN{ number=11.2423085208 , exponent=21 };
-	[SerializeField] BFN _b = new BFN{ number=12312425.14124312 , exponent=100 };
+	[SerializeField] BFN _a = new BFN{ number=101.2423085208 , exponent=102 };
+	[SerializeField] BFN _b = new BFN{ number=123.124251412431 , exponent=105 };
 	[SerializeField] OP _operator = OP.Add;
 	[SerializeField] BFN _result = (BFN) 0;
 
