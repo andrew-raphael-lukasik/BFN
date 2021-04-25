@@ -1,7 +1,3 @@
-```diff
-! This repo is a work in progress, expect bugs.
-```
-
 # Big F_____ Number
 Structure to help you store, represent and operate on very big numbers in Unity.
 
@@ -12,7 +8,7 @@ It's a `Double` with auxiliary `Int64` exponent.
 BFN.MaxValue = Double.MaxValue * Math.Pow( 10d , Int64.MaxValue );// +1.7976931348623157 E+9223372036854776115
 BFN.MinValue = Double.MinValue * Math.Pow( 10d , Int64.MinValue );// -1.7976931348623157 E-9223372036854775500
 ```
-These numbers are large enough to make most software refuse to calculate them and just print "infinity" or "invalid input".
+These numbers are large enough to make most software refuse to calculate them and just print "infinity" or "invalid input". Although precision stays 64-bit.
 
 ---
 ### Can I see it in the `Inspector` window serialized there?
