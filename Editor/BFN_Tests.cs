@@ -29,8 +29,6 @@ namespace BFN_Tests
 		[Test] public void _1__1 () => Assert.IsTrue( BFN.Approx( 1 , 1 ) );
 		[Test] public void _n1__n1 () => Assert.IsTrue( BFN.Approx( -1 , -1 ) );
 		[Test] public void _1__1dotEpsilon () => Assert.IsTrue( BFN.Approx( 1d , 1d+double.Epsilon ) );
-		[Test] public void _9x__9x () => Assert.IsTrue( BFN.Approx( 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999d , 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999d ) );
-		[Test] public void _0dot1x__0dot1x () => Assert.IsTrue( BFN.Approx( 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001d , 0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001d ) );
 		// TODO: test precision boundaries
 	}
 
@@ -38,10 +36,10 @@ namespace BFN_Tests
 	{
 		[Test] public void _1e1__2e2 ()
 		{
-			BFN a = new BFN{ number=1 , exponent=1 }, original_a = a;// 10		1e1		->	0.1e2
-			BFN b = new BFN{ number=2 , exponent=2 }, original_b = b;// 200		2e2
+			BFN a = new BFN{ number=1 , exponent=1 }, original_a = a;
+			BFN b = new BFN{ number=2 , exponent=2 }, original_b = b;
 			BFN.ToCommonExponent( ref a , ref b );
-			Assert.AreEqual( expected:original_b , actual:b );
+			Assert.AreEqual( expected:original_b , actual:b );// no change
 			Assert.AreEqual( expected:new BFN{ number=0.1d , exponent=2 } , actual:a );
 		}
 		[Test] public void _1e15__1e2 ()
@@ -49,8 +47,16 @@ namespace BFN_Tests
 			BFN a = new BFN{ number=1 , exponent=15 }, original_a = a;
 			BFN b = new BFN{ number=1 , exponent=2 }, original_b = b;
 			BFN.ToCommonExponent( ref a , ref b );
-			Assert.AreEqual( expected:original_a , actual:a );
+			Assert.AreEqual( expected:original_a , actual:a );// no change
 			Assert.AreEqual( expected:new BFN{ number=1e-13 , exponent=15 } , actual:b );
+		}
+		[Test] public void _1en1__n1e1 ()
+		{
+			BFN a = new BFN{ number=1 , exponent=-1 }, original_a = a;// 1e-1	(0.1)	| 
+			BFN b = new BFN{ number=-1 , exponent=1 }, original_b = b;// -1e1	(-10)	|
+			BFN.ToCommonExponent( ref a , ref b );
+			Assert.AreEqual( expected:original_b , actual:b );// no change
+			Assert.AreEqual( expected:new BFN{ number=0.01 , exponent=1 } , actual:a );
 		}
 	}
 
@@ -76,13 +82,11 @@ namespace BFN_Tests
 		[Test] public void _3e10__4e3 () => _Add( expected:new BFN(30.000004,9) , new BFN(3,10) , new BFN(4,3) );
 		[Test] public void _1e14__0e13 () => _Add( expected:new BFN(1,14) , new BFN(1,14) , new BFN(0,13) );
 		[Test] public void _1e14__0en13 () => _Add( expected:new BFN(1,14) , new BFN(1,14) , new BFN(0,-13) );
-		[Test] public void _n1en14__0en13 () => _Add( expected:new BFN(-1,-14) , new BFN(-1,-14) , new BFN(0,-13) );
+		[Test] public void _n1en14__0en13 () => _Add( expected:new BFN(-1,-14).compressed , new BFN(-1,-14) , new BFN(0,-13) );
 		[Test] public void _0e0__0e0 () => _Add( expected:new BFN(0,0) , new BFN(0,0) , new BFN(0,0) );
-		[Test] public void _11e21__33e100 () => _Add( expected:new BFN(3.30000000000000000000000000000000000000000000000000000000000000000000000000000011,101) , new BFN(11,21) , new BFN(33,100) );
-
+		[Test] public void _1en1__n1e1 () => _Add( expected:new BFN(-9.9,0) , new BFN(1,-1) , new BFN(-1,1) );//0.1 + -10
 		[Test] public void _1e4__1 () => _Add( expected:new BFN(10.001,3) , new BFN(1,4) , 1 );
-
-		[Test] public void _G17 () => Debug.Log($"{0.1234567890_1234567890_1234567890_1234567890_1234567890d:G17}{double.MaxValue}");
+		// [Test] public void _G17 () => Debug.Log($"{0.1234567890_1234567890_1234567890_1234567890_1234567890d:G17}{double.MaxValue}");
 
 		void _Add ( BFN expected , BFN L , BFN R )
 		{
