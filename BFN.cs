@@ -67,6 +67,7 @@ public struct BFN
 	{
 		ToCommonExponent( ref a , ref b );
 		BFN result = new BFN{ number = a.number + b.number , exponent = a.exponent }.compressed;
+		// Debug.Log($"\t(+) {a.ToStringPrecise()} + {b.ToStringPrecise()}\t= {result.ToStringPrecise()}");
 		return result;
 	}
 	public static BFN operator + ( BFN a , double b ) => ( a + new BFN(b,0).compressed ).compressed;
@@ -116,6 +117,7 @@ public struct BFN
 		a.Compress();
 		b.Compress();
 		bool result = a.exponent==b.exponent && Approx(a.number,b.number);
+		// Debug.Log($"\t(Equals) {a.exponent}=={b.exponent} && Approx( {a.number} , {b.number} )\t = {result}");
 		return result;
 	}
 
@@ -138,6 +140,7 @@ public struct BFN
 		}
 		else// if( b.exponent > a.exponent )
 		{
+			// Debug.Log($"{a.number} /= {Math.Pow( 10d , b.exponent - a.exponent )}\t{a.exponent} and {b.exponent}");
 			a.number /= Math.Pow( 10d , b.exponent - a.exponent );
 			a.exponent = b.exponent;
 		}
@@ -158,7 +161,7 @@ public struct BFN
 			e2 = log10floor + exponent;
 		}
 		long e2mod3 = e2 % 3;
-		
+
 		exponent = e2 - e2mod3;
 		number = frac * Math.Pow( 10d , e2mod3 );
 	}
