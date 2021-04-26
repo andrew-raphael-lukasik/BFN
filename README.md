@@ -1,5 +1,5 @@
 # Big F_____ Number
-Structure to help you store, represent and operate on very big numbers in Unity. This one separates coefficient from it's exponents (and prefers engineering notation at that).
+Structure to help you store, represent and operate on very big numbers in Unity. This one separates coefficient from it's exponent (and prefers engineering notation at that).
 
 ---
 ### Define "big numbers"
