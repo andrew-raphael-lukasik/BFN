@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.Assertions;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,7 +14,7 @@ public struct BFN
 	#region fields
 
 
-	public double number;
+	public double coefficient;
 	public long exponent;
 
 
@@ -23,9 +22,9 @@ public struct BFN
 	#region constructors
 
 
-	public BFN ( double number , long exponent )
+	public BFN ( double coefficient , long exponent )
 	{
-		this.number = number;
+		this.coefficient = coefficient;
 		this.exponent = exponent;
 	}
 
@@ -41,7 +40,7 @@ public struct BFN
 	#region operators
 
 
-	public static explicit operator double ( BFN value ) => value.number * Math.Pow(10d,value.exponent);
+	public static explicit operator double ( BFN value ) => value.coefficient * Math.Pow(10d,value.exponent);
 	public static explicit operator BFN ( double value ) => new BFN(value,0);
 
 	public static bool operator == ( BFN a , BFN b ) => Equals( a:a , b:b );
@@ -52,7 +51,7 @@ public struct BFN
 		a.Compress();
 		b.Compress();
 		ToCommonExponent( ref a , ref b );
-		return a.number > b.number;
+		return a.coefficient > b.coefficient;
 	}
 
 	public static bool operator < ( BFN a , BFN b )
@@ -60,13 +59,13 @@ public struct BFN
 		a.Compress();
 		b.Compress();
 		ToCommonExponent( ref a , ref b );
-		return a.number < b.number;
+		return a.coefficient < b.coefficient;
 	}
 
 	public static BFN operator + ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		BFN result = new BFN{ number = a.number + b.number , exponent = a.exponent }.compressed;
+		BFN result = new BFN{ coefficient = a.coefficient + b.coefficient , exponent = a.exponent }.compressed;
 		// Debug.Log($"\t(+) {a.ToStringPrecise()} + {b.ToStringPrecise()}\t= {result.ToStringPrecise()}");
 		return result;
 	}
@@ -74,12 +73,12 @@ public struct BFN
 	public static BFN operator - ( BFN a , BFN b )
 	{
 		ToCommonExponent( ref a , ref b );
-		return new BFN{ number = a.number - b.number , exponent = a.exponent }.compressed;
+		return new BFN{ coefficient = a.coefficient - b.coefficient , exponent = a.exponent }.compressed;
 	}
 	public static BFN operator - ( BFN a , double b ) => ( a - new BFN(b,0).compressed ).compressed;
-	public static BFN operator * ( BFN a , BFN b ) => new BFN{ number = a.number * b.number , exponent = a.exponent + b.exponent }.compressed;
+	public static BFN operator * ( BFN a , BFN b ) => new BFN{ coefficient = a.coefficient * b.coefficient , exponent = a.exponent + b.exponent }.compressed;
 	public static BFN operator * ( BFN a , double b ) => ( a * new BFN(b,0).compressed ).compressed;
-	public static BFN operator / ( BFN a , BFN b ) => new BFN( a.number/b.number , a.exponent-b.exponent ).compressed;
+	public static BFN operator / ( BFN a , BFN b ) => new BFN( a.coefficient/b.coefficient , a.exponent-b.exponent ).compressed;
 	public static BFN operator / ( BFN a , double b ) => ( a / new BFN(b,0).compressed ).compressed;
 
 
@@ -87,7 +86,7 @@ public struct BFN
 	#region method overrides
 
 
-	public override string ToString () => $"{number} {GetExponentName()}";
+	public override string ToString () => $"{coefficient} {GetExponentName()}";
 	
 	public override bool Equals ( object obj ) => obj!=null ? Equals( a:this , b:(BFN)obj ) : false;
 
@@ -99,7 +98,7 @@ public struct BFN
 		unchecked
 		{
 			int hash = 486187739;
-			hash = hash * 16777619 + copy.number.GetHashCode();
+			hash = hash * 16777619 + copy.coefficient.GetHashCode();
 			hash = hash * 16777619 + copy.exponent.GetHashCode();
 			return hash;
 		}
@@ -110,14 +109,14 @@ public struct BFN
 	#region public methods
 
 
-	public string ToStringPrecise () => $"{number.ToString("G17")}e{exponent.ToString("G17")}";
+	public string ToStringPrecise () => $"{coefficient.ToString("G17")}e{exponent.ToString("G17")}";
 
 	public static bool Equals ( BFN a , BFN b )
 	{
 		a.Compress();
 		b.Compress();
-		bool result = a.exponent==b.exponent && Approx(a.number,b.number);
-		// Debug.Log($"\t(Equals) {a.exponent}=={b.exponent} && Approx( {a.number} , {b.number} )\t = {result}");
+		bool result = a.exponent==b.exponent && Approx(a.coefficient,b.coefficient);
+		// Debug.Log($"\t(Equals) {a.exponent}=={b.exponent} && Approx( {a.coefficient} , {b.coefficient} )\t = {result}");
 		return result;
 	}
 
@@ -135,35 +134,36 @@ public struct BFN
 		if( a.exponent==b.exponent ) return;
 		else if( a.exponent > b.exponent )
 		{
-			b.number /= Math.Pow( 10d , a.exponent - b.exponent );
+			b.coefficient /= Math.Pow( 10d , a.exponent - b.exponent );
 			b.exponent = a.exponent;
 		}
 		else// if( b.exponent > a.exponent )
 		{
-			// Debug.Log($"{a.number} /= {Math.Pow( 10d , b.exponent - a.exponent )}\t{a.exponent} and {b.exponent}");
-			a.number /= Math.Pow( 10d , b.exponent - a.exponent );
+			// Debug.Log($"{a.coefficient} /= {Math.Pow( 10d , b.exponent - a.exponent )}\t{a.exponent} and {b.exponent}");
+			a.coefficient /= Math.Pow( 10d , b.exponent - a.exponent );
 			a.exponent = b.exponent;
 		}
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	/// <summary> Attempts to pack stored value to prevent number component from losing it's accuracy. </summary>
+	/// <summary> Attempts to pack stored value to prevent coefficient component from losing it's accuracy. </summary>
+	/// <remarks> Prefers **engineering notation**. </remarks>
 	public void Compress ()
 	{
 		long e2 = 0;
 		double frac = 0;
-		int sign = Math.Sign( number );
+		int sign = Math.Sign( coefficient );
 		if( sign!=0 )
 		{
-			double log10 = Math.Log10( Math.Abs(number) ) * (double) sign;
+			double log10 = Math.Log10( Math.Abs(coefficient) ) * (double) sign;
 			long log10floor = (long) Math.Floor(log10);
-			frac = number / Math.Pow( 10d , log10floor );
+			frac = coefficient / Math.Pow( 10d , log10floor );
 			e2 = log10floor + exponent;
 		}
 		long e2mod3 = e2 % 3;
 
 		exponent = e2 - e2mod3;
-		number = frac * Math.Pow( 10d , e2mod3 );
+		coefficient = frac * Math.Pow( 10d , e2mod3 );
 	}
 
 	public string GetExponentName ()
@@ -230,7 +230,7 @@ public struct BFN
 		public override void OnGUI ( Rect position , SerializedProperty property , GUIContent label )
 		{
 			BFN bigNumber = (BFN) fieldInfo.GetValue(property.serializedObject.targetObject);
-			var numberProperty = property.FindPropertyRelative( nameof(BFN.number) );
+			var coefficientProperty = property.FindPropertyRelative( nameof(BFN.coefficient) );
 			var exponentProperty = property.FindPropertyRelative( nameof(BFN.exponent) );
 
 			EditorGUI.BeginProperty( position , label , property );
@@ -239,14 +239,14 @@ public struct BFN
 				if( GUI.Button( new Rect( position.x , position.y , 21 , position.height ) , new GUIContent("▼", "Compress numerical value. For example: \"1000\" will become \"1E3\".") ) )
 				{
 					bigNumber.Compress();
-					numberProperty.doubleValue = bigNumber.number;
+					coefficientProperty.doubleValue = bigNumber.coefficient;
 					exponentProperty.longValue = bigNumber.exponent;
 					property.serializedObject.ApplyModifiedProperties();
 				}
 				position.x += 21;
 				position.width -= 21;
 				float width3 = position.width * 1f/3f;
-				EditorGUI.PropertyField( new Rect( position.x , position.y , width3 , position.height ) , numberProperty , GUIContent.none );
+				EditorGUI.PropertyField( new Rect( position.x , position.y , width3 , position.height ) , coefficientProperty , GUIContent.none );
 				EditorGUI.LabelField( new Rect( position.x+width3 , position.y , width3 , position.height ) , $" [{bigNumber.GetExponentName()}]" );
 				EditorGUI.LabelField( new Rect( position.x+width3*2f , position.y , 21 , position.height ) , new GUIContent("E", "Exponent. For example: \"3\" means \"1000\" (also \"1E3\").") );
 				EditorGUI.PropertyField( new Rect( position.x+width3*2f+21 , position.y , width3-21 , position.height ) , exponentProperty , GUIContent.none );

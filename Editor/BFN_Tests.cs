@@ -36,27 +36,27 @@ namespace BFN_Tests
 	{
 		[Test] public void _1e1__2e2 ()
 		{
-			BFN a = new BFN{ number=1 , exponent=1 }, original_a = a;
-			BFN b = new BFN{ number=2 , exponent=2 }, original_b = b;
+			BFN a = new BFN( 1 , 1 ), original_a = a;
+			BFN b = new BFN( 2 , 2 ), original_b = b;
 			BFN.ToCommonExponent( ref a , ref b );
 			Assert.AreEqual( expected:original_b , actual:b );// no change
-			Assert.AreEqual( expected:new BFN{ number=0.1d , exponent=2 } , actual:a );
+			Assert.AreEqual( expected:new BFN( 0.1d , 2 ) , actual:a );
 		}
 		[Test] public void _1e15__1e2 ()
 		{
-			BFN a = new BFN{ number=1 , exponent=15 }, original_a = a;
-			BFN b = new BFN{ number=1 , exponent=2 }, original_b = b;
+			BFN a = new BFN( 1 , 15 ), original_a = a;
+			BFN b = new BFN( 1 , 2 ), original_b = b;
 			BFN.ToCommonExponent( ref a , ref b );
 			Assert.AreEqual( expected:original_a , actual:a );// no change
-			Assert.AreEqual( expected:new BFN{ number=1e-13 , exponent=15 } , actual:b );
+			Assert.AreEqual( expected:new BFN( 1e-13 , 15 ) , actual:b );
 		}
 		[Test] public void _1en1__n1e1 ()
 		{
-			BFN a = new BFN{ number=1 , exponent=-1 }, original_a = a;// 1e-1	(0.1)	| 
-			BFN b = new BFN{ number=-1 , exponent=1 }, original_b = b;// -1e1	(-10)	|
+			BFN a = new BFN( 1 , -1 ), original_a = a;// 1e-1	(0.1)	| 
+			BFN b = new BFN( -1 , 1 ), original_b = b;// -1e1	(-10)	|
 			BFN.ToCommonExponent( ref a , ref b );
 			Assert.AreEqual( expected:original_b , actual:b );// no change
-			Assert.AreEqual( expected:new BFN{ number=0.01 , exponent=1 } , actual:a );
+			Assert.AreEqual( expected:new BFN( 0.01 , 1 ) , actual:a );
 		}
 	}
 
