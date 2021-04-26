@@ -1,5 +1,5 @@
 # Big F_____ Number
-Structure to help you store, represent and operate on very big numbers in Unity. This one is for cases where you want to separate base numbers from their exponents.
+Structure to help you store, represent and operate on very big numbers in Unity. This one separates coefficient from it's exponents (and prefers engineering notation at that).
 
 ---
 ### Define "big numbers"
@@ -9,6 +9,12 @@ BFN.MaxValue = Double.MaxValue * Math.Pow( 10d , Int64.MaxValue );// +1.79769313
 BFN.MinValue = Double.MinValue * Math.Pow( 10d , Int64.MinValue );// -1.7976931348623157 E-9223372036854775500
 ```
 These numbers are large enough to make most software refuse to calculate them and just print "infinity" or "invalid input".
+
+---
+### Limitations
+Coefficient is a `Double` so this is a lossy format.
+
+Note that this behaviour can be somewhat mitigated by changing coefficient value type to, for example, `ulong`.
 
 ---
 ### Can I see it in the `Inspector` window serialized there?
