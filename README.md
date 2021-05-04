@@ -33,7 +33,8 @@ Will produce this Inpector view:
 
 ![sdas](https://i.imgur.com/ulyUl2E.jpg)
 
-Where ▼ button will help you simplify (compress) numbers for shorter notation. For example `( num=5000 , e=0 )` will become `( num=5 , e=3 )`.
+"▼" button will help you simplify numbers for shorter notation (`{ num=5000 , e=0 }` -> `{ num=5 , e=3 }`).
+Although coefficient will become longer sometimes because BFN prefers engineering notation ( `{ num=1 , e=5 }` -> `{ num=100 , e=3 }`).
 
 ---
 
