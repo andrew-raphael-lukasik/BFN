@@ -12,7 +12,7 @@ These numbers are large enough to make most software refuse to calculate them an
 
 ---
 ### Limitations
-Coefficient is a `Double` so this is a lossy format. If you need lossless data type then you probably may want to go with `BigInteger`.
+Coefficient is a `Double` so this is a lossy format. If you need lossless data type then you probably may want to go with [System.Numerics.BigInteger](https://docs.microsoft.com/en-us/dotnet/api/system.numerics.biginteger).
 
 ---
 ### Can I see it in the `Inspector` window serialized there?
