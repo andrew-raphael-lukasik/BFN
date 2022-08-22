@@ -186,6 +186,7 @@ public struct BFN
 	#region lookup tables
 
 
+	// note: these names will vary from country to country so change those to suit your needs
 	static readonly Dictionary<long,string> _exponent_names = new Dictionary<long,string>{
 		{	-9		,	"Billionth"				} ,
 		{	-6		,	"Millionth"				} ,
